@@ -7,22 +7,20 @@ import numpy as np
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import PPO
 
-from src.config import Config
-import src.dataloader as dl
-from src.env import HandoverEnvPPO
-from src.env.ho_env_ppo import test_ppo_model
-import src.utils as ut
-
-THIS_PATH = os.path.dirname(os.path.abspath(__file__))
+from ho_optim_drl.config import Config
+import ho_optim_drl.dataloader as dl
+from ho_optim_drl.env import HandoverEnvPPO
+from ho_optim_drl.env.ho_env_ppo import test_ppo_model
+import ho_optim_drl.utils as ut
 
 
-def main():
+def main(root_path: str):
     """Validate PPO on the handover environment."""
     # Load configuration
     config = Config()
 
     # Load MATLAB files
-    data_dir = os.path.join(THIS_PATH, "data", "processed")
+    data_dir = os.path.join(root_path, "data", "processed")
     rsrp_files = dl.get_filenames(data_dir, "rsrp")
     sinr_files = dl.get_filenames(data_dir, "sinr")
 

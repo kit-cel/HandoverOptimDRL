@@ -10,7 +10,7 @@ import scipy.io
 from . import utils as ut
 
 if TYPE_CHECKING:
-    from src.config import Config
+    from ho_optim_drl.config import Config
 
 
 def get_filenames(dir_: str, prefix: str) -> list[str]:

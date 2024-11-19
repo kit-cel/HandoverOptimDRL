@@ -1,25 +1,21 @@
 """Validate 3GPP protocol on the handover environment."""
 
 import os
-import sys
 
 import numpy as np
 
-from src.config import Config
-import src.dataloader as dl
-from src.env import HandoverEnv3GPP
-import src.utils as ut
+from ho_optim_drl.config import Config
+import ho_optim_drl.dataloader as dl
+from ho_optim_drl.env import HandoverEnv3GPP
+import ho_optim_drl.utils as ut
 
 
-THIS_PATH = os.path.dirname(os.path.abspath(__file__))
-
-
-def main() -> int:
+def main(root_path: str) -> int:
     """Main function."""
 
     config = Config()
     # Load MATLAB files
-    data_dir = os.path.join(THIS_PATH, "data", "processed")
+    data_dir = os.path.join(root_path, "data", "processed")
     rsrp_files = dl.get_filenames(data_dir, "rsrp")
     sinr_files = dl.get_filenames(data_dir, "sinr")
 
@@ -108,7 +104,3 @@ def main() -> int:
     ut.print_aggregated_stats(aggregated_stats)
 
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
