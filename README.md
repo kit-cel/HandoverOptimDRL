@@ -1,15 +1,20 @@
 # HandoverOptimDRL
-Framework for learning handover algorithms using deep reinforcement learning.
+A framework for developing and evaluating adaptive handover algorithms using deep reinforcement learning.
 
-*CODE IS CURRENTLY BEING REVISED. A NEW VERSION WILL BE AVAILABLE SOON.*
+> **Note**: *The code is currently being revised. A new version will be available soon.*
+
+---
 
 ## Description
-HandoverOptimDRL is a framework designed to facilitate the development and evaluation of handover algorithms using deep reinforcement learning, i.e., proximal policy optimization (PPO).
-It provides tools and environments to simulate the 3GPP handover protocol and to train and evaluate a PPO-based handover protocol.
+HandoverOptimDRL is a framework designed to facilitate developing and evaluating handover algorithms using deep reinforcement learning, i.e., proximal policy optimization (PPO).
+It provides tools and environments to simulate the 3GPP handover protocol and train and evaluate a PPO-based handover protocol.
 
-This repository contains the source code, data sets and trained PPO model for the paper *A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols* [1].
+This repository contains the source code, data sets, and trained PPO model for the paper:
+**A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols**, see reference below.
 
-## Installation
+---
+
+## **Installation**
 To install the HandoverOptimDRL package, follow these steps:
 
 1. Clone the repository:
@@ -22,13 +27,42 @@ To install the HandoverOptimDRL package, follow these steps:
     cd HandoverOptimDRL
     ```
 
-3. Set up the environment:
+3. Install the package:
     ```bash
-    python setup.py install
+    python -m pip install .
     ```
 
 You are now ready to use the HandoverOptimDRL framework for your projects.
 
-## Usage
+---
 
-[1] Johannes Voigt, Peter J. Gu, and Peter M. Rost, "A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols". Available: ""
+## **Getting Started**
+### **Run Protocol Validation**
+You can validate the PPO-based and 3GPP handover protocols using the `run.py` file:
+
+1. **Validate PPO-based Protocol**:
+   ```bash
+   python run.py validate_ppo
+   ```
+
+2. **Validate 3GPP Protocol**:
+   ```bash
+   python run.py validate_3gpp
+   ```
+
+## **Citation**
+If you use **HandoverOptimDRL** in your research, please cite the accompanying paper:
+
+```
+@inproceedings{handoveroptimdrl,
+  title={A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols},
+  author={Johannes Voigt and Peter J. Gu and Peter M. Rost},
+  year={2024},
+  organization={KIT - Karlsruhe Institute of Technology},
+}
+```
+
+---
+
+## **License**
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
