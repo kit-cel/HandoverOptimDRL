@@ -2,6 +2,8 @@
 
 import argparse
 import os
+import sys
+
 from scripts.validate_3gpp import main as validate_3gpp
 from scripts.validate_ppo import main as validate_ppo
 
@@ -26,4 +28,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    sys.exit(run())

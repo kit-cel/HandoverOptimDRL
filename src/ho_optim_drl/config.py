@@ -46,5 +46,9 @@ class Config:
 
     # Training parameters
     lr: float = 1e-4
+
+    # Environment parameters
     terminate_on_pp: bool = True  # Terminate episode on ping-pong
     terminate_on_rlf: bool = True  # Terminate episode on RLF
+    test_deterministic_actions: bool = True  # Test with deterministic actions
+    permit_ho_prep_abort: bool = False  # Permit HO preparation abort

@@ -1,7 +1,6 @@
 """Validate PPO protocol on the handover environment."""
 
 import os
-import sys
 
 import numpy as np
 from stable_baselines3.common.env_checker import check_env
@@ -52,7 +51,7 @@ def main(root_path: str):
     check_env(env, warn=True)
 
     # Load PPO model
-    model_dir = os.path.join(THIS_PATH, "results", "models", "ppo_model", "model")
+    model_dir = os.path.join(root_path, "results", "models", "ppo_model", "model")
     model = PPO.load(
         model_dir,
         env=env,
@@ -64,10 +63,15 @@ def main(root_path: str):
     aggregated_stats = {key: [] for key in env.ho_procedure.get_stats_dict()}
 
     # Test PPO model on environment
+    if config.test_deterministic_actions:
+        print("[PPO] Test with deterministic actions.")
+    else:
+        print("[PPO] Test with actions sampled from the policy distribution.")
+    print(f"[Env] HO preparation abort permitted: {config.permit_ho_prep_abort}")
     for i in range(env.n_datasets):
         # Test the model on the environment
         test_ppo_model(env, model, i)
-        print(f"Testing PPO HO protocol with dataset {i:3d}/{env.n_datasets}.")
+        print(f"Testing PPO HO protocol with dataset {i + 1:3d}/{env.n_datasets}.")
 
         # Save statistics
         stats = env.get_statistics()
@@ -128,7 +132,3 @@ def main(root_path: str):
     aggregated_stats["mean_pp_prob"] = mean_pp_prob
     aggregated_stats["mean_rlf_prob"] = mean_rlf_prob
     ut.print_aggregated_stats(aggregated_stats)
-
-
-if __name__ == "__main__":
-    sys.exit(main())
