@@ -31,6 +31,10 @@ To install the HandoverOptimDRL package, follow these steps:
     ```bash
     python -m pip install .
     ```
+    i.e., to install it in editable mode/develop mode:
+    ```bash
+    python -m pip install -e .
+    ```
 
 You are now ready to use the HandoverOptimDRL framework for your projects.
 
