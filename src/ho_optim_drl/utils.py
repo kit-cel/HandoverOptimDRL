@@ -19,7 +19,9 @@ def extract_speed(filename: str) -> int:
         Speed in km/h.
     """
     match = re.search(r"(\d+)kmh", filename)
-    return int(match.group(1)) if match else None
+    if not match:
+        raise ValueError(f"Filename '{filename}' does not contain speed information.")
+    return int(match.group(1))
 
 
 def filenames_speed_filter(

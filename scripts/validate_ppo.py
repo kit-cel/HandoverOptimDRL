@@ -8,8 +8,8 @@ from stable_baselines3 import PPO
 
 from ho_optim_drl.config import Config
 import ho_optim_drl.dataloader as dl
-from ho_optim_drl.env import HandoverEnvPPO
-from ho_optim_drl.env.ho_env_ppo import test_ppo_model
+from ho_optim_drl.gym_env import HandoverEnvPPO
+from ho_optim_drl.gym_env.ho_env_ppo import test_ppo_model
 import ho_optim_drl.utils as ut
 
 
@@ -127,7 +127,7 @@ def main(root_path: str):
         )
 
     # Print aggregated statistics
-    aggregated_stats["speeds"] = np.unique(speeds)
+    aggregated_stats["speeds"] = np.unique(speeds).tolist()
     aggregated_stats["r_rel"] = r_rel
     aggregated_stats["mean_pp_prob"] = mean_pp_prob
     aggregated_stats["mean_rlf_prob"] = mean_rlf_prob

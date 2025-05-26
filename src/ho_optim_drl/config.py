@@ -42,7 +42,7 @@ class Config:
 
     # PPO parameters
     rew_const: float = 1.0  # reward constant
-    net_arch: dict = field(default_factory=lambda: [64, 128, 64])  # NN architecture
+    net_arch: list[int] = field(default_factory=lambda: [64, 128, 64])
 
     # Training parameters
     lr: float = 1e-4
