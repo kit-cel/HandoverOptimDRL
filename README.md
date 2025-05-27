@@ -1,4 +1,4 @@
-![pylint]()
+![pylint](https://img.shields.io/badge/PyLint-9.63-yellow?logo=python&logoColor=white)
 
 
 # HandoverOptimDRL
