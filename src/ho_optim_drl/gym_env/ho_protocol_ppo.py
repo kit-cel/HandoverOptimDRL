@@ -38,14 +38,14 @@ class SyncSignal(AbstractTask):
 
     def __init__(
         self,
-        q_in_db: float,
-        q_out_db: float,
+        q_in_db_db: float,
+        q_out_db_db: float,
         debug: bool = False,
         verbose: int | None = None,
     ) -> None:
         super().__init__("SyncSignal", debug, verbose)
-        self.q_in_db = q_in_db
-        self.q_out_db = q_out_db
+        self.q_in_db_db = q_in_db_db
+        self.q_out_db_db = q_out_db_db
         self.flag_out_of_sync = False
 
     def reset(self, tic: int | None) -> None:
@@ -56,9 +56,9 @@ class SyncSignal(AbstractTask):
         """Check if out-of-sync."""
         if bs is None or bs < 0 or bs >= len(sinr_db):
             raise ValueError(f"Invalid base station index: {bs}")
-        if sinr_db[bs] < self.q_out_db:
+        if sinr_db[bs] < self.q_out_db_db:
             self.flag_out_of_sync = True
-        elif sinr_db[bs] > self.q_in_db:
+        elif sinr_db[bs] > self.q_in_db_db:
             self.flag_out_of_sync = False
         self.debug_msg(
             f"{'Out-of-sync' if self.flag_out_of_sync else 'In-sync'}: "
@@ -74,14 +74,14 @@ class RadioResourceControl(AbstractTask):
 
     def __init__(
         self,
-        q_in_db: float,
-        q_out_db: float,
+        q_in_db_db: float,
+        q_out_db_db: float,
         debug: bool = False,
         verbose: int | None = None,
     ) -> None:
         super().__init__("RRCConnectionReestablishment", debug, verbose)
-        self.q_in_db = q_in_db
-        self.q_out_db = q_out_db
+        self.q_in_db_db = q_in_db_db
+        self.q_out_db_db = q_out_db_db
         self.pcell = None
         self.ncell = None
         self.tcell = None
@@ -111,7 +111,7 @@ class RadioResourceControl(AbstractTask):
     def cell_search(self, sinr_db: np.ndarray, tic: int) -> int | None:
         """Search for suitable cell."""
         cell = np.argmax(sinr_db).item()
-        if sinr_db[cell] > self.q_in_db:
+        if sinr_db[cell] > self.q_in_db_db:
             self.ncell = cell
             self.debug_msg(f"Suitable cell found: PCI {cell}", 3, tic)
         else:
@@ -272,14 +272,14 @@ class HOProcedurePPO:
 
         # General tasks
         self.sync_source = SyncSignal(
-            self.config.q_in,
-            self.config.q_out,
+            self.config.q_in_db,
+            self.config.q_out_db,
             self.debug,
             self.verbose,
         )
         self.rrc = RadioResourceControl(
-            self.config.q_in,
-            self.config.q_out,
+            self.config.q_in_db,
+            self.config.q_out_db,
             self.debug,
             self.verbose,
         )
@@ -616,7 +616,7 @@ class HOProcedurePPO:
     def _get_state_dict(self) -> dict[str, int | float]:
         """Get state dictionary."""
         return {
-            "q_in_out": self.sync_source.flag_out_of_sync,
+            "q_in_db_out": self.sync_source.flag_out_of_sync,
             "ho_prep": self.cntr["ho_prep"].pending,
             "ho_exec": self.cntr["ho_exec"].pending,
             "rlf": self.rlf_detected,

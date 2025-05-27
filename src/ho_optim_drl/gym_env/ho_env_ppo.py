@@ -28,8 +28,8 @@ class HandoverEnvPPO(gym.Env):
         self,
         config: "Config",
         rsrp_list: list[np.ndarray],
-        rsrq_norm_list: list[np.ndarray],
         sinr_list: list[np.ndarray],
+        sinr_norm_list: list[np.ndarray],
     ):
         """Initialize the Handover Environment"""
         super().__init__()
@@ -46,7 +46,7 @@ class HandoverEnvPPO(gym.Env):
         # Data loader
         self.rsrp_list = rsrp_list
         self.sinr_list = sinr_list
-        self.rsrq_norm_list = rsrq_norm_list
+        self.sinr_norm_list = sinr_norm_list
 
         # Environment parameters
         self.n_datasets = len(rsrp_list)
@@ -56,8 +56,8 @@ class HandoverEnvPPO(gym.Env):
 
         # Observation space
         self.n_observations = 2 * self.n_bs + 1
-        self.o_low = np.zeros(self.n_observations)
-        self.o_high = np.ones(self.n_observations)
+        self.o_low = np.zeros(self.n_observations, dtype=np.float32)
+        self.o_high = np.ones(self.n_observations, dtype=np.float32)
         self.observation_space = spaces.Box(self.o_low, self.o_high, dtype=np.float32)
 
         # Action space
@@ -78,7 +78,7 @@ class HandoverEnvPPO(gym.Env):
         self.s_ho_complete = []
         self.s_ho_prep = []
         self.s_ho_exec = []
-        self.s_q_out = []
+        self.s_q_out_db = []
         self.s_rlf = []
         self.s_pp = []
 
@@ -161,7 +161,7 @@ class HandoverEnvPPO(gym.Env):
         self.s_ho_complete = []
         self.s_ho_prep = []
         self.s_ho_exec = []
-        self.s_q_out = []
+        self.s_q_out_db = []
         self.s_rlf = []
         self.s_pp = []
 
@@ -202,7 +202,7 @@ class HandoverEnvPPO(gym.Env):
         self.s_ho_complete.append(False)
         self.s_ho_prep.append(False)
         self.s_ho_exec.append(False)
-        self.s_q_out.append(False)
+        self.s_q_out_db.append(False)
         self.s_rlf.append(False)
         self.s_pp.append(False)
 
@@ -214,7 +214,7 @@ class HandoverEnvPPO(gym.Env):
         # Initial state
         s_pcell_indicator = np.zeros(self.n_bs)
         s_pcell_indicator[pcell] = 1
-        input_rsrp = self.rsrq_norm_list[self.dataset_idx][self.t, :]
+        input_rsrp = self.sinr_norm_list[self.dataset_idx][self.t, :]
         s_pp_indicator = np.array([0])
         self.state = np.concatenate((s_pcell_indicator, input_rsrp, s_pp_indicator))
 
@@ -244,19 +244,24 @@ class HandoverEnvPPO(gym.Env):
         if self.terminate_on_rlf and raw_obs["rlf"]:
             self.terminated = True
 
+        # Terminate episode if ping-pong flag is set
+        if self.terminate_on_pp and raw_obs["pp"]:
+            self.terminated = True
+
         # Truncate episode if max episode length is reached
         if 1 + self.t == self.time_steps - 1:
             self.truncated = True
 
         self.t += 1
 
-        s_pcell_indicator = np.zeros(self.n_bs)  # PCell indicator flag
+        s_bs = np.zeros(self.n_bs)  # PCell indicator flag
         pcell = self.ho_procedure.rrc.pcell
         if pcell is not None:
-            s_pcell_indicator[pcell] = 1
-        s_rsrq = self.rsrq_norm_list[self.dataset_idx][self.t, :]  # Next RSRP values
-        s_pp_indicator = np.array([self.ho_procedure.cntr["mtsc"].pending])
-        self.state = np.concatenate((s_pcell_indicator, s_rsrq, s_pp_indicator))
+            s_bs[pcell] = 1
+        s_sinr = self.sinr_norm_list[self.dataset_idx][self.t, :]  # Next RSRP values
+        s_pp = np.array([self.ho_procedure.cntr["mtsc"].pending])
+
+        self.state = np.concatenate((s_bs, s_sinr, s_pp))
 
         return (
             np.array(tuple(self.state), dtype=np.float32),
@@ -307,7 +312,7 @@ class HandoverEnvPPO(gym.Env):
         self.s_ho_complete.append(raw_obs["ho_complete"])
         self.s_ho_prep.append(raw_obs["ho_prep"])
         self.s_ho_exec.append(raw_obs["ho_exec"])
-        self.s_q_out.append(raw_obs["q_in_out"])
+        self.s_q_out_db.append(raw_obs["q_in_db_out"])
         self.s_rlf.append(raw_obs["rlf"])
         self.s_pp.append(raw_obs["pp"])
 
@@ -332,7 +337,7 @@ class HandoverEnvPPO(gym.Env):
             self.s_ho_complete,
             self.s_ho_prep,
             self.s_ho_exec,
-            self.s_q_out,
+            self.s_q_out_db,
             self.s_rlf,
             self.s_pp,
             # Relative value of counters (t/t_max)
@@ -346,10 +351,13 @@ class HandoverEnvPPO(gym.Env):
         """Get the reward for the current state."""
         reward = 0.0
 
-        rsrq = self.rsrq_norm_list[self.dataset_idx][self.t, :]
-        best_bs = np.argmax(rsrq)
+        sinr = self.sinr_list[self.dataset_idx][self.t, :]
+        sinr_norm = self.sinr_norm_list[self.dataset_idx][self.t, :]
+
+        best_bs = np.argmax(sinr)
+
         if self.s_pcell[-1] > 0:  # Connected
-            reward += rsrq[self.s_pcell[-1]].item()  # RSRQ-based reward
+            reward += sinr_norm[self.s_pcell[-1]].item()  # SINR-based reward
             if self.s_pcell[-1] == best_bs:  # Bonus for best BS
                 reward += self.config.rew_const
 

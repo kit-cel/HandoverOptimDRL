@@ -57,7 +57,7 @@ def filenames_speed_filter(
     return rsrp_filenames, sinr_filenames, speeds
 
 
-def get_sync_state(sinr_db: float, q_in: float, q_out: float):
+def get_sync_state(sinr_db: float, q_in_db: float, q_out_db: float):
     """
     Check if the SINR is within the QoS thresholds.
 
@@ -65,9 +65,9 @@ def get_sync_state(sinr_db: float, q_in: float, q_out: float):
     ----------
     sinr_db : float
         SINR in dB.
-    q_in : float
+    q_in_db : float
         Upper QoS threshold in dB. Indicates in-sync.
-    q_out : float
+    q_out_db : float
         Lower QoS threshold in dB. Indicates out-of-sync.
 
     Returns
@@ -75,14 +75,14 @@ def get_sync_state(sinr_db: float, q_in: float, q_out: float):
     int
         State of the SINR. 1: out-of-sync, 2: in hysteresis, 3: in-sync.
     """
-    if sinr_db < q_out:
+    if sinr_db < q_out_db:
         return 1
-    if sinr_db < q_in:
+    if sinr_db < q_in_db:
         return 2
     return 3
 
 
-def norm(ins: np.ndarray, clip_l: float, clip_h: float) -> np.ndarray:
+def clipnorm(ins: np.ndarray, clip_l: float, clip_h: float) -> np.ndarray:
     """
     Clip and normalize the input values.
 

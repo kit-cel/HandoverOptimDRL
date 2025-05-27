@@ -7,8 +7,6 @@ import numpy as np
 import scipy
 import scipy.io
 
-from . import utils as ut
-
 if TYPE_CHECKING:
     from ho_optim_drl.config import Config
 
@@ -39,7 +37,7 @@ def load_preprocess_dataset(
     sinr_file: str,
     upsample_factor: int = 1,
     transpose_result: bool = False,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Load the dataset from MATLAB files and apply preprocessing.
 
@@ -61,7 +59,7 @@ def load_preprocess_dataset(
     Returns
     -------
     tuple[np.ndarray, np.ndarray, np.ndarray]
-        The preprocessed RSRP, RSRQ, and SINR data.
+        The preprocessed RSRP and SINR data.
 
     """
     mat_rsrp = scipy.io.loadmat(os.path.join(data_dir, rsrp_file), squeeze_me=True)
@@ -73,56 +71,20 @@ def load_preprocess_dataset(
     rsrp = mat_rsrp[rsrp_key].T
     sinr = mat_sinr[sinr_key].T
 
-    # Compute RSRQ
-    rsrq = calculate_rsrq(rsrp)
-
     # Upsampling
     n_steps, _ = rsrp.shape
     rsrp_up = scipy.signal.resample(rsrp, n_steps * upsample_factor, axis=0)
-    rsrq_up = scipy.signal.resample(rsrq, n_steps * upsample_factor, axis=0)
     sinr_up = scipy.signal.resample(sinr, n_steps * upsample_factor, axis=0)
 
     # L3 filtering
-    rsrp_up_filt = l3_filtering(rsrp_up, config.l3_filter_w)
-    rsrq_up_filt = l3_filtering(rsrq_up, config.l3_filter_w)
-    sinr_up_filt = l3_filtering(sinr_up, config.l3_filter_w)
+    rsrp_filtered = l3_filtering(rsrp_up, config.l3_filter_w)
+    sinr_filtered = l3_filtering(sinr_up, config.l3_filter_w)
 
     if transpose_result:
-        rsrp_up_filt = rsrp_up_filt.T
-        rsrq_up_filt = rsrq_up_filt.T
-        sinr_up_filt = sinr_up_filt.T
+        rsrp_filtered = rsrp_filtered.T
+        sinr_filtered = sinr_filtered.T
 
-    return rsrp_up_filt, rsrq_up_filt, sinr_up_filt
-
-
-def calculate_rsrq(rsrp_dbm: np.ndarray) -> np.ndarray:
-    """
-    Calculate the RSRQ.
-
-    Parameters
-    ----------
-    rsrp_dbm : np.ndarray
-        The RSRP in dBm.
-
-    Returns
-    -------
-    np.ndarray
-        The RSRQ in dB.
-    """
-
-    # Convert to linear scale
-    rsrp_lin = ut.dbm_to_mwatt(rsrp_dbm)
-
-    _, n_bs = rsrp_dbm.shape
-
-    rsrq_lin = np.zeros_like(rsrp_dbm)
-    for i in range(n_bs):
-        # Get interfering base stations
-        interf_bs_idxs = np.delete(np.arange(n_bs), i)
-
-        p_interf = np.sum(rsrp_lin[:, interf_bs_idxs], axis=1)
-        rsrq_lin[:, i] = rsrp_lin[:, i] / p_interf
-    return ut.mwatt_to_dbm(rsrq_lin)
+    return rsrp_filtered, sinr_filtered
 
 
 def l3_filtering(measurements: np.ndarray, w: float = 0.1) -> np.ndarray:

@@ -34,14 +34,14 @@ class SyncSignal(AbstractTask):
 
     def __init__(
         self,
-        q_in_db: float,
-        q_out_db: float,
+        q_in_db_db: float,
+        q_out_db_db: float,
         debug: bool = False,
         debug_lvl: int | None = None,
     ) -> None:
         super().__init__("SyncSignal", debug, debug_lvl)
-        self.q_in_db = q_in_db
-        self.q_out_db = q_out_db
+        self.q_in_db_db = q_in_db_db
+        self.q_out_db_db = q_out_db_db
         self.flag_out_of_sync = False
 
     def reset(self, tic: int | None) -> None:
@@ -52,9 +52,9 @@ class SyncSignal(AbstractTask):
         """Check if out-of-sync."""
         if bs is None or bs < 0 or bs >= len(sinr_db):
             raise ValueError(f"Invalid base station index: {bs}")
-        if sinr_db[bs] < self.q_out_db:
+        if sinr_db[bs] < self.q_out_db_db:
             self.flag_out_of_sync = True
-        elif sinr_db[bs] > self.q_in_db:
+        elif sinr_db[bs] > self.q_in_db_db:
             self.flag_out_of_sync = False
         self.debug_msg(
             f"{'Out-of-sync' if self.flag_out_of_sync else 'In-sync'}: SINR {sinr_db[bs]:.2f} dB",
@@ -72,14 +72,14 @@ class RadioResourceControl(AbstractTask):
 
     def __init__(
         self,
-        q_in_db: float,
-        q_out_db: float,
+        q_in_db_db: float,
+        q_out_db_db: float,
         debug: bool = False,
         debug_lvl: int | None = None,
     ) -> None:
         super().__init__("RRCConnectionReestablishment", debug, debug_lvl)
-        self.q_in_db = q_in_db
-        self.q_out_db = q_out_db
+        self.q_in_db_db = q_in_db_db
+        self.q_out_db_db = q_out_db_db
         self.pcell = None
         self.ncell = None
 
@@ -101,7 +101,7 @@ class RadioResourceControl(AbstractTask):
     def cell_search(self, sinr_db: np.ndarray, tic: int) -> None:
         """Search for suitable cell."""
         cell = np.argmax(sinr_db).item()
-        if sinr_db[cell] > self.q_in_db:
+        if sinr_db[cell] > self.q_in_db_db:
             self.ncell = cell
             self.debug_msg(f"Suitable cell found: PCI {cell}", 3, tic)
         else:

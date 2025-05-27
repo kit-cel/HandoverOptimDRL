@@ -39,14 +39,14 @@ class HandoverEnv3GPP:
 
         # General tasks
         self.sync_source = SyncSignal(
-            self.config.q_in,
-            self.config.q_out,
+            self.config.q_in_db,
+            self.config.q_out_db,
             self.debug,
             self.verbose,
         )
         self.rrc = RadioResourceControl(
-            self.config.q_in,
-            self.config.q_out,
+            self.config.q_in_db,
+            self.config.q_out_db,
             self.debug,
             self.verbose,
         )
