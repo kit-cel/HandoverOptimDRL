@@ -52,11 +52,9 @@ class HandoverEnv3GPP:
         )
         self.event_handler = HOEventHandler(
             debug=self.debug,
-            kwargs={
-                "hys_a3": self.config.a3_hys,
-                "off_a3": self.config.a3_off,
-                "debug_lvl": self.verbose,
-            },
+            hys_a3=self.config.a3_hys,
+            off_a3=self.config.a3_off,
+            debug_lvl=self.verbose,
         )
         self.cntr = {
             "n310": GeneralCounter(
@@ -119,6 +117,8 @@ class HandoverEnv3GPP:
 
         # Timeline
         self.bs_idxs = []
+        self.ho_idxs = []
+        self.rlfr_idxs = []
         self.rsrp_timeline = []
         self.sinr_timeline = []
         self.sinr_at_ho_exe_pcell = []
@@ -135,6 +135,8 @@ class HandoverEnv3GPP:
         for task in self.cntr.values():
             task.reset(tic)
         self.bs_idxs = []
+        self.ho_idxs = []
+        self.rlfr_idxs = []
         self.rsrp_timeline = []
         self.sinr_timeline = []
         self.sinr_at_ho_exe_pcell = []
@@ -311,11 +313,14 @@ class HandoverEnv3GPP:
             self._rlf_recovery(tic)
 
             # Results
-            self.bs_idxs.append(self.rrc.pcell)
+            self.ho_idxs.append(self.cntr["ho_exec"].pending)
+            self.rlfr_idxs.append(self.cntr["rlfr"].pending)
             if self.rrc.is_connected:
+                self.bs_idxs.append(self.rrc.pcell)
                 self.rsrp_timeline.append(rsrp_i_db[self.rrc.pcell])
                 self.sinr_timeline.append(sinr_i_db[self.rrc.pcell])
             else:
+                self.bs_idxs.append(np.nan)
                 self.rsrp_timeline.append(np.nan)
                 self.sinr_timeline.append(np.nan)
 

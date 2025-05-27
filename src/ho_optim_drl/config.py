@@ -16,7 +16,7 @@ class Config:
     train_or_test = "test"
     clip_rsrq: bool = True  # Clip RSRQ values
     delta_t_ms: int = 10  # Time step in ms (delta t)
-    clip_h: float = 10.0  # Clipping range
+    clip_h: float = 10.0  # Clipping range for SINR
     clip_l: float = -10.0
     l3_k: int = 16  # L3 filter coefficient
     l3_filter_w: float = 1 / (2 ** (l3_k / 4))  # L3 filter weight

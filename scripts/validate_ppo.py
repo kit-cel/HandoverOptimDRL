@@ -24,7 +24,7 @@ def main(root_path: str):
     sinr_files = dl.get_filenames(data_dir, "sinr")
 
     # Speed filter
-    use_speed_list = [30]
+    use_speed_list = [30, 50, 70, 90]
     rsrp_files, sinr_files, speeds = ut.filenames_speed_filter(
         rsrp_files, sinr_files, use_speed_list
     )

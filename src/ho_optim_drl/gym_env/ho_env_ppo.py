@@ -220,9 +220,13 @@ class HandoverEnvPPO(gym.Env):
 
         return np.array(self.state, dtype=np.float32), {}
 
-    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
+    def step(
+        self, action: int | np.ndarray
+    ) -> tuple[np.ndarray, float, bool, bool, dict]:
         """Take a step in the environment"""
         # Validate the action and initial state
+        if isinstance(action, np.ndarray):
+            action = action.item()
         self._validate_state_action(action)
 
         # Take a step in the handover environment/state machine
@@ -418,8 +422,6 @@ def test_ppo_model(
         )
 
         # Take the action in the environment
-        if not isinstance(action, int):
-            raise TypeError(f"Expected action to be of type int, got {type(action)}")
         obs, reward, _, truncated, _ = env.step(action)
 
         # Store results

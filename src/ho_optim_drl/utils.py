@@ -152,6 +152,9 @@ def get_result_container(speeds: list[int]) -> dict:
     dict
         Result container.
     """
+    bs_idxs = {}
+    ho_idxs = {}
+    rlf_idxs = {}
     sinr_connected = {}
     sinr_max = {}
     n_ho = {}
@@ -160,6 +163,9 @@ def get_result_container(speeds: list[int]) -> dict:
     sinr_at_ho_exe_pcell = []
     sinr_after_ho_exe_tcell = []
     for speed in speeds:
+        bs_idxs[speed] = []
+        ho_idxs[speed] = []
+        rlf_idxs[speed] = []
         sinr_connected[speed] = []
         sinr_max[speed] = []
         n_ho[speed] = []
@@ -167,6 +173,9 @@ def get_result_container(speeds: list[int]) -> dict:
         n_rlf[speed] = []
 
     res_dict = {
+        "bs_idxs": bs_idxs,
+        "ho_idxs": ho_idxs,
+        "rlf_idxs": rlf_idxs,
         "sinr_connected": sinr_connected,
         "sinr_max": sinr_max,
         "n_ho": n_ho,

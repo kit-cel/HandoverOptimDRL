@@ -144,10 +144,8 @@ class HOEventHandler(AbstractTask):
 
     target_cell: int | None
 
-    def __init__(self, debug: bool = False, **kwargs: dict[str, Any]) -> None:
-        if kwargs.get("debug_lvl") is None:
-            debug_lvl = 0
-        elif isinstance(kwargs["debug_lvl"], int):
+    def __init__(self, debug: bool = False, **kwargs: Any) -> None:
+        if kwargs.get("debug_lvl") is None and isinstance(kwargs["debug_lvl"], int):
             debug_lvl = kwargs["debug_lvl"]
         else:
             debug_lvl = None
@@ -227,9 +225,11 @@ class HOEventHandler(AbstractTask):
         bool
             Event A3
         """
-        if pcell is None or pcell < 0 or pcell >= len(rsrp):
+        if pcell is None or ncell is None:
+            return False
+        if pcell < 0 or pcell >= len(rsrp):
             raise ValueError(f"Invalid serving cell index: {pcell}")
-        if ncell is None or ncell < 0 or ncell >= len(rsrp):
+        if ncell < 0 or ncell >= len(rsrp):
             raise ValueError(f"Invalid neighboring cell index: {ncell}")
         if (
             rsrp[ncell] + ofn + ocn - self.rsrp_hys["a3"]

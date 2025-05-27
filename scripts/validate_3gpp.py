@@ -35,7 +35,6 @@ def main(root_path: str) -> int:
         zip(speeds, rsrp_files, sinr_files)
     ):
         print(f"Testing 3GPP HO protocol with dataset {i:3d}/{len(sinr_files)}.")
-
         rsrp, _, sinr = dl.load_preprocess_dataset(
             config,
             data_dir,
@@ -57,6 +56,9 @@ def main(root_path: str) -> int:
             aggregated_stats[key].append(val)
 
         # Save additional statistics
+        result_container["bs_idxs"][speed].append(np.array(env.bs_idxs).tolist())
+        result_container["ho_idxs"][speed].append(np.array(env.ho_idxs).tolist())
+        result_container["rlf_idxs"][speed].append(np.array(env.rlfr_idxs).tolist())
         result_container["sinr_connected"][speed].extend(env.sinr_timeline)
         result_container["sinr_max"][speed].extend(list(np.max(sinr, axis=0)))
         result_container["sinr_at_ho_exe_pcell"].extend(env.sinr_at_ho_exe_pcell)
