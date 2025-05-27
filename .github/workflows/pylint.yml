@@ -1,23 +1,25 @@
 name: Pylint
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
+
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+
+    - name: Run Pylint with badge support
+      uses: Silleellie/pylint-github-action@v2.1
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
+        lint-path: |
+          src
+        python-version: 3.12
+        requirements-path: requirements.txt
+        readme-path: README.md        # This line enables automatic badge updates
+        pylintrc-path: .pylintrc      # Optional, if you use one
+        badge-text: PyLint
+        color-bad-score: red
+        color-ok-score: orange
+        color-good-score: yellow
+        color-perfect-score: brightgreen
