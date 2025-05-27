@@ -1,4 +1,4 @@
-[![Pylint Workflow](https://github.com/kit-cel/HandoverOptimDRL/actions/workflows/pylint.yml/badge.svg)](https://github.com/kit-cel/HandoverOptimDRL/actions/workflows/pylint.yml)
+![pylint]()
 
 
 # HandoverOptimDRL
