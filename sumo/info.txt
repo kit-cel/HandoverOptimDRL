@@ -1,0 +1,11 @@
+# Network plan
+netconvert --osm-files map.osm -o map.net.xml --pedestrian --sidewalks.guess --bikeways.guess
+
+# Buildings
+polyconvert --osm-files map.osm -n map.net.xml -o map_buildings.poly.xml
+
+# Create trips
+python randomTrips.py -n .\map.net.xml -o .\routes.rou.xml --trip-attributes "type='user_70kmh'" -b 0 -e 1000 -p 10 --validate --min-distance 0 --maxtries 100000 --fringe-factor 1
+
+# Simulation:
+sumo-gui -n map.net.xml -r routes.rou.xml --additional-files vehicles.rou.xml, map_buildings.poly.xml

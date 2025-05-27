@@ -1,0 +1,8 @@
+<routes>
+    <!-- Define vehicle types with specific speeds -->
+    <vType id="user_3kmh" accel="10.0" decel="10.0" maxSpeed="0.833" color="1,0,0"/> <!-- 3 km/h -->
+    <vType id="user_30kmh" accel="10.0" decel="10.0" maxSpeed="8.33" color="0,1,0"/>  <!-- 30 km/h -->
+    <vType id="user_50kmh" accel="10.0" decel="10.0" maxSpeed="13.89" color="1,1,0"/> <!-- 50 km/h -->
+    <vType id="user_70kmh" accel="10.0" decel="10.0" maxSpeed="19.44" color="0,0,1"/> <!-- 50 km/h -->
+    <vType id="user_120kmh" accel="10.0" decel="10.0" maxSpeed="33.33" color="1,1,0"/> <!-- 120 km/h -->
+</routes>
