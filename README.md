@@ -8,11 +8,11 @@ HandoverOptimDRL is a framework designed to facilitate developing and evaluating
 It provides tools and environments to simulate the 3GPP handover protocol and to train and evaluate a PPO-based handover protocol.
 
 This repository contains the source code, datasets, and trained PPO model for the paper:
-**A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols**, see reference below.
+**A Deep Reinforcement Learning-based Approach for Adaptive Handover Protocols**, see reference [1].
 
 ---
 
-## **Installation**
+## Installation
 To install the HandoverOptimDRL package, follow these steps:
 
 1. Clone the repository:
@@ -38,7 +38,7 @@ You are now ready to use the HandoverOptimDRL framework for your projects.
 
 ---
 
-## **Getting Started**
+## Getting Started
 ### **Generate New Datasets**
 1. **Generate GPX Traces**:
     By using the open source software [Simulation of Urban MObility](https://eclipse.dev/sumo/), you can generate new user traces:
@@ -55,13 +55,13 @@ You are now ready to use the HandoverOptimDRL framework for your projects.
     To run the simulation, first adapt the launcher files based on the SUMO GPX files, and then start the `runSimulation.m` script.
 
 
-### **Train a New PPO Agent**
+### Train a New PPO Agent
 1. **Train a PPO agent**:
    ```bash
    python -m run train_ppo
    ```
 
-### **Run Protocol Validation**
+### Run Protocol Validation
 You can validate the PPO-based and 3GPP handover protocols using the `run.py` file:
 
 1. **Validate the PPO-based protocol**:
@@ -74,7 +74,7 @@ You can validate the PPO-based and 3GPP handover protocols using the `run.py` fi
    python -m run validate_3gpp
    ```
 
-## **Citation**
+## Citation [1]
 If you use **HandoverOptimDRL** in your work, please cite our paper ([full-text on IEEE Xplore](https://ieeexplore.ieee.org/document/10949111)):
 ```
 @INPROCEEDINGS{10949111,
