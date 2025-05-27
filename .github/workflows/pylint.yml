@@ -17,7 +17,6 @@ jobs:
         python-version: 3.12
         requirements-path: requirements.txt
         readme-path: README.md        # This line enables automatic badge updates
-        pylintrc-path: .pylintrc      # Optional, if you use one
         badge-text: PyLint
         color-bad-score: red
         color-ok-score: orange
