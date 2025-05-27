@@ -1,4 +1,4 @@
-[![pylint]()]
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
 
 # HandoverOptimDRL
 A framework for developing and evaluating adaptive handover algorithms using deep reinforcement learning (PPO).
