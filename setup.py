@@ -8,7 +8,7 @@ with open("requirements.txt", encoding="utf-8") as f:
 
 setup(
     name="ho_optim_drl",
-    version="0.0.1",
+    version="1.0.0",
     description="Framework for learning handover algorithms using deep reinforcement learning.",
     author="Johannes Voigt",
     author_email="johannes.voigt@kit.edu",
