@@ -13,7 +13,7 @@ from ho_optim_drl.gym_env.ho_env_ppo import test_ppo_model
 import ho_optim_drl.utils as ut
 
 
-def main(root_path: str):
+def main(root_path: str) -> int:
     """Validate PPO on the handover environment."""
     # Load configuration
     config = Config()
@@ -31,23 +31,28 @@ def main(root_path: str):
 
     # Load all datasets
     rsrp_list = []
-    rsrq_list = []
     sinr_list = []
+    sinr_norm_list = []
     for rsrp_fname_i, sinr_fname_i in zip(rsrp_files, sinr_files):
         # Load dataset
-        rsrp, rsrq, sinr = dl.load_preprocess_dataset(
+        rsrp, sinr = dl.load_preprocess_dataset(
             config, data_dir, rsrp_fname_i, sinr_fname_i
         )
 
-        # Clip and normalize
-        rsrq = ut.norm(rsrq, config.clip_l, config.clip_h)
+        # Clip and normalize SINR
+        if config.clip_sinr:
+            sinr_norm = ut.clipnorm(
+                sinr, config.sinr_lower_clip, config.sinr_upper_clip
+            )
+        else:
+            sinr_norm = sinr
 
         sinr_list.append(sinr)
         rsrp_list.append(rsrp)
-        rsrq_list.append(rsrq)
+        sinr_norm_list.append(sinr_norm)
 
     # Generate environment
-    env = HandoverEnvPPO(config, rsrp_list, rsrq_list, sinr_list)
+    env = HandoverEnvPPO(config, rsrp_list, sinr_list, sinr_norm_list)
     check_env(env, warn=True)
 
     # Load PPO model
@@ -132,3 +137,5 @@ def main(root_path: str):
     aggregated_stats["mean_pp_prob"] = mean_pp_prob
     aggregated_stats["mean_rlf_prob"] = mean_rlf_prob
     ut.print_aggregated_stats(aggregated_stats)
+
+    return 0

@@ -35,12 +35,11 @@ def main(root_path: str) -> int:
         zip(speeds, rsrp_files, sinr_files)
     ):
         print(f"Testing 3GPP HO protocol with dataset {i:3d}/{len(sinr_files)}.")
-        rsrp, _, sinr = dl.load_preprocess_dataset(
+        rsrp, sinr = dl.load_preprocess_dataset(
             config,
             data_dir,
             rsrp_filename,
             sinr_filename,
-            upsample_factor=1,  # Depending on the dataset
             transpose_result=True,
         )
 
