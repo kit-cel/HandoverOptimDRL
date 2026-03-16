@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/github/v/tag/kit-cel/HandoverOptimDRL?label=version) ![pylint](https://img.shields.io/badge/PyLint-9.63-yellow?logo=python&logoColor=white)
+![Version](https://img.shields.io/github/v/tag/kit-cel/HandoverOptimDRL?label=version) ![pylint](https://img.shields.io/badge/PyLint-9.65-yellow?logo=python&logoColor=white)
 
 
 # HandoverOptimDRL
