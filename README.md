@@ -77,6 +77,11 @@ You can validate the PPO-based and 3GPP handover protocols using the `run.py` fi
    python -m run validate_3gpp
    ```
 
+3. **Plot the results**:
+   ```bash
+   python -m run plot_results
+   ```
+
 ## Citation [1]
 If you use **HandoverOptimDRL** in your work, please cite our paper ([full-text on IEEE Xplore](https://ieeexplore.ieee.org/document/10949111)):
 ```
