@@ -1,7 +1,12 @@
 """Utility functions for the project."""
 
+import csv
+import os
 import re
+from typing import Any
+
 import numpy as np
+import pandas as pd
 
 
 def filenames_speed_filter(
@@ -285,7 +290,7 @@ def print_aggregated_stats(stats: dict):
         "",
         "Avg relative rate (total)",
         "",
-        "Speeds",
+        "Speed",
         "Avg relative rate",
         "Avg PP prob",
         "Avg RLF prob",
@@ -311,9 +316,9 @@ def print_aggregated_stats(stats: dict):
         f"{np.mean(stats["r_rel"]):6.3f} %",
         "",
         (
-            f"[{"".join([f"{speed:6d}, " for speed in stats['speeds']])}] km/h"
-            if len(stats["speeds"]) > 1
-            else f"{stats["speeds"][0]:6d} km/h"
+            f"[{"".join([f"{speed:6d}, " for speed in stats['speed']])}] km/h"
+            if len(stats["speed"]) > 1
+            else f"{stats["speed"][0]:6d} km/h"
         ),
         (
             f"[{"".join([f"{100*r_rel:6.3f}, " for r_rel in stats['r_rel']])}] %"
@@ -321,14 +326,14 @@ def print_aggregated_stats(stats: dict):
             else f"{100*stats['r_rel'][0]:6.3f} %"
         ),
         (
-            f"[{"".join([f"{100*pp_prob:6.3f}, " for pp_prob in stats['mean_pp_prob']])}] %"
-            if len(stats["mean_pp_prob"]) > 1
-            else f"{100*stats['mean_pp_prob'][0]:6.3f} %"
+            f"[{"".join([f"{100*pp_prob:6.3f}, " for pp_prob in stats['mean_pp_rate']])}] %"
+            if len(stats["mean_pp_rate"]) > 1
+            else f"{100*stats['mean_pp_rate'][0]:6.3f} %"
         ),
         (
-            f"[{"".join([f"{100*rlf_prob:6.3f}, " for rlf_prob in stats['mean_rlf_prob']])}] %"
-            if len(stats["mean_rlf_prob"]) > 1
-            else f"{100*stats['mean_rlf_prob'][0]:6.3f} %"
+            f"[{"".join([f"{100*rlf_prob:6.3f}, " for rlf_prob in stats['mean_rlf_rate']])}] %"
+            if len(stats["mean_rlf_rate"]) > 1
+            else f"{100*stats['mean_rlf_rate'][0]:6.3f} %"
         ),
         "",
         f"{np.mean(stats['num_ho_prep_started']):5.2f}",
@@ -351,3 +356,34 @@ def print_aggregated_stats(stats: dict):
     print("\nAggregated Results\n---------------------------------")
     for row in tab:
         print(f"{row[0]:<{max_param_len}}: {row[1]}")
+
+
+def write_to_csv(
+    file_path: str, data_dict: dict[str, list[Any]], delimiter: str = ";"
+) -> None:
+    """Write data to a CSV file."""
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    header = data_dict.keys()
+    with open(file_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=header, delimiter=delimiter)
+        writer.writeheader()
+
+        lens = [len(v) for v in data_dict.values()]
+        if len(set(lens)) != 1:
+            raise ValueError("Dictionary contains lists of different lengths.")
+        for i in range(lens[0]):
+            row = {key: data_dict[key][i] for key in header}
+            writer.writerow(row)
+
+
+def load_metrics(csv_path: str) -> pd.DataFrame:
+    """Load metrics from CSV."""
+    df = pd.read_csv(csv_path, sep=";")
+
+    required_cols = {"speed", "r_rel", "mean_pp_rate", "mean_rlf_rate"}
+    missing = required_cols.difference(df.columns)
+    if missing:
+        raise ValueError(f"{csv_path} is missing columns: {sorted(missing)}")
+
+    return df

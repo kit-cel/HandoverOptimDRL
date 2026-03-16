@@ -214,9 +214,9 @@ class HandoverEnvPPO(gym.Env):
         # Initial state
         s_pcell_indicator = np.zeros(self.n_bs)
         s_pcell_indicator[pcell] = 1
-        input_rsrp = self.sinr_norm_list[self.dataset_idx][self.t, :]
+        input_sinr = self.sinr_norm_list[self.dataset_idx][self.t, :]
         s_pp_indicator = np.array([0])
-        self.state = np.concatenate((s_pcell_indicator, input_rsrp, s_pp_indicator))
+        self.state = np.concatenate((s_pcell_indicator, input_sinr, s_pp_indicator))
 
         return np.array(self.state, dtype=np.float32), {}
 

@@ -16,7 +16,7 @@ Arguments:
 import argparse
 import os
 import sys
-from scripts import train_ppo, validate_3gpp, validate_ppo
+from scripts import plot_results, train_ppo, validate_3gpp, validate_ppo
 
 THIS_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,6 +32,20 @@ def run() -> int:
     )
     subparsers = parser.add_subparsers(dest="command", help="\nAvailable commands:")
 
+    # plot_results
+    subparsers.add_parser(
+        "plot_results",
+        help="Plot the results shown in the paper.",
+        description="Runs the script that creates the same plots that are shown in the paper.",
+    )
+
+    # train_ppo
+    subparsers.add_parser(
+        "train_ppo",
+        help="Train a PPO policy for handover decisions",
+        description="Trains a PPO policy to make optimal handover decisions.",
+    )
+
     # validate_3gpp
     subparsers.add_parser(
         "validate_3gpp",
@@ -46,25 +60,20 @@ def run() -> int:
         description="Runs validation using a pre-trained PPO handover policy.",
     )
 
-    # train_ppo
-    subparsers.add_parser(
-        "train_ppo",
-        help="Train a PPO policy for handover decisions",
-        description="Trains a PPO policy to make optimal handover decisions.",
-    )
-
     if len(sys.argv) == 1:
         parser.print_help()
         return 0
 
     args = parser.parse_args()
 
+    if args.command == "plot_results":
+        return plot_results.main(THIS_PATH)
+    if args.command == "train_ppo":
+        return train_ppo.main(THIS_PATH)
     if args.command == "validate_3gpp":
         return validate_3gpp.main(THIS_PATH)
     if args.command == "validate_ppo":
         return validate_ppo.main(THIS_PATH)
-    if args.command == "train_ppo":
-        return train_ppo.main(THIS_PATH)
     parser.print_help()
     return 1
 

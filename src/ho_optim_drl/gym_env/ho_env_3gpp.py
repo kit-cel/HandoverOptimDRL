@@ -411,35 +411,37 @@ class HandoverEnv3GPP:
         )
 
         return {
-            "num_base_stations": n_base_stations,
-            "num_samples": n_samples,
-            "mean_sinr": np.mean(sinr_db_mat),
-            "variance_sinr": np.var(sinr_db_mat),
-            "median_sinr": np.median(sinr_db_mat),
-            "q1_sinr": q1_sinr,
-            "q3_sinr": q3_sinr,
-            "max_spectral_eff": max_c_mean,
-            "spectral_eff": mean_c,
-            "total_time": 0 + len(self.bs_idxs),
-            "connected_time": 0
-            + len(self.bs_idxs)
-            - len(np.where((np.isnan(self.bs_idxs)))[0]),
-            "num_ho_prep_started": 0 + len(self.cntr["ho_prep"].start_idxs),
-            "num_ho_prep_terminated": 0 + len(self.cntr["ho_prep"].terminated_idxs),
-            "num_ho_prep_completed": 0 + len(self.cntr["ho_prep"].done_idxs),
-            "num_ho_prep_aborted": 0 + len(self.cntr["ho_prep"].aborted_idxs),
-            "num_ho_prep_failed": 0 + len(self.cntr["ho_prep"].failed_idxs),
-            "num_ho_prep_error": 0 + len(self.cntr["ho_prep"].error_idxs),
-            "num_ho_exe_started": 0 + len(self.cntr["ho_exec"].start_idxs),
-            "num_ho_exe_terminated": 0 + len(self.cntr["ho_exec"].terminated_idxs),
-            "num_ho_exe_completed": 0 + len(self.cntr["ho_exec"].done_idxs),
-            "num_ho_exe_aborted": 0 + len(self.cntr["ho_exec"].aborted_idxs),
-            "num_ho_exe_failed": 0 + len(self.cntr["ho_exec"].failed_idxs),
-            "num_ho_exe_error": 0 + len(self.cntr["ho_exec"].error_idxs),
-            "num_rlf": 0 + len(self.cntr["rlfr"].start_idxs),
-            "rlf_rate": 0.0 + rlf_rate,
-            "num_pp": 0 + len(self.cntr["mtsc"].aborted_idxs),
-            "pp_rate": 0.0 + pp_rate,
+            "num_base_stations": int(n_base_stations),
+            "num_samples": int(n_samples),
+            "mean_sinr": float(np.mean(sinr_db_mat)),
+            "variance_sinr": float(np.var(sinr_db_mat)),
+            "median_sinr": float(np.median(sinr_db_mat)),
+            "q1_sinr": float(q1_sinr),
+            "q3_sinr": float(q3_sinr),
+            "max_spectral_eff": float(max_c_mean),
+            "spectral_eff": float(mean_c),
+            "total_time": int(0 + len(self.bs_idxs)),
+            "connected_time": int(
+                0 + len(self.bs_idxs) - len(np.where((np.isnan(self.bs_idxs)))[0])
+            ),
+            "num_ho_prep_started": int(0 + len(self.cntr["ho_prep"].start_idxs)),
+            "num_ho_prep_terminated": int(
+                0 + len(self.cntr["ho_prep"].terminated_idxs)
+            ),
+            "num_ho_prep_completed": int(0 + len(self.cntr["ho_prep"].done_idxs)),
+            "num_ho_prep_aborted": int(0 + len(self.cntr["ho_prep"].aborted_idxs)),
+            "num_ho_prep_failed": int(0 + len(self.cntr["ho_prep"].failed_idxs)),
+            "num_ho_prep_error": int(0 + len(self.cntr["ho_prep"].error_idxs)),
+            "num_ho_exe_started": int(0 + len(self.cntr["ho_exec"].start_idxs)),
+            "num_ho_exe_terminated": int(0 + len(self.cntr["ho_exec"].terminated_idxs)),
+            "num_ho_exe_completed": int(0 + len(self.cntr["ho_exec"].done_idxs)),
+            "num_ho_exe_aborted": int(0 + len(self.cntr["ho_exec"].aborted_idxs)),
+            "num_ho_exe_failed": int(0 + len(self.cntr["ho_exec"].failed_idxs)),
+            "num_ho_exe_error": int(0 + len(self.cntr["ho_exec"].error_idxs)),
+            "num_rlf": int(0 + len(self.cntr["rlfr"].start_idxs)),
+            "rlf_rate": float(0.0 + rlf_rate),
+            "num_pp": int(0 + len(self.cntr["mtsc"].aborted_idxs)),
+            "pp_rate": float(0.0 + pp_rate),
         }
 
     def get_stats_dict(self) -> dict[str, int | float | None]:

@@ -105,6 +105,14 @@ def main(root_path: str) -> int:
     sinr_after_ho_exe_tcell_db = np.array(result_container["sinr_after_ho_exe_tcell"])
     sinr_at_ho_exe_pcell_db[np.isnan(sinr_at_ho_exe_pcell_db)] = -np.inf
     sinr_after_ho_exe_tcell_db[np.isnan(sinr_after_ho_exe_tcell_db)] = -np.inf
+    ut.write_to_csv(
+        file_path=os.path.join(root_path, "results", "ho_sinr", "ppo_pre_ho_sinr.csv"),
+        data_dict={"pre_ho_sinr_db": sinr_at_ho_exe_pcell_db.tolist()},
+    )
+    ut.write_to_csv(
+        file_path=os.path.join(root_path, "results", "ho_sinr", "ppo_post_ho_sinr.csv"),
+        data_dict={"post_ho_sinr_db": sinr_after_ho_exe_tcell_db.tolist()},
+    )
 
     # Results (all speeds individually)
     r_rel = []
@@ -132,10 +140,17 @@ def main(root_path: str) -> int:
         )
 
     # Print aggregated statistics
-    aggregated_stats["speeds"] = np.unique(speeds).tolist()
-    aggregated_stats["r_rel"] = r_rel
-    aggregated_stats["mean_pp_prob"] = mean_pp_prob
-    aggregated_stats["mean_rlf_prob"] = mean_rlf_prob
+    agg_metrics = {
+        "speed": np.unique(speeds).tolist(),
+        "r_rel": r_rel,
+        "mean_pp_rate": mean_pp_prob,
+        "mean_rlf_rate": mean_rlf_prob,
+    }
+    aggregated_stats.update(agg_metrics)
     ut.print_aggregated_stats(aggregated_stats)
+
+    # Log result metrics to csv file
+    metrics_path = os.path.join(root_path, "results", "metrics", "ppo_metrics.csv")
+    ut.write_to_csv(metrics_path, agg_metrics)
 
     return 0
