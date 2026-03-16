@@ -27,7 +27,7 @@ def get_filenames(dir_: str, prefix: str) -> list[str]:
     list[str]
         A list of filenames in the specified directory.
     """
-    return [f for f in os.listdir(dir_) if prefix in f]
+    return sorted([f for f in os.listdir(dir_) if prefix in f])
 
 
 def load_preprocess_dataset(

@@ -4,33 +4,15 @@ import re
 import numpy as np
 
 
-def extract_speed(filename: str) -> int:
-    """
-    Extract speed from filename.
-
-    Parameters
-    ----------
-    filename : str
-        Filename string.
-
-    Returns
-    -------
-    int
-        Speed in km/h.
-    """
-    match = re.search(r"(\d+)kmh", filename)
-    if not match:
-        raise ValueError(f"Filename '{filename}' does not contain speed information.")
-    return int(match.group(1))
-
-
 def filenames_speed_filter(
     rsrp_filenames: list[str],
     sinr_filenames: list[str],
     use_speed_list: list[int],
 ) -> tuple[list[str], list[str], list[int]]:
     """
-    Filter the files based on the speed list.
+    Return sorted, speed-filtered RSRP- and SINR-filenames together with their speeds.
+    Only pairs that exist **in both** input lists and whose speed is contained in
+    ``use_speed_list`` are kept.
 
     Parameters
     ----------
@@ -44,17 +26,29 @@ def filenames_speed_filter(
     Returns
     -------
     tuple[list[str], list[str], list[int]]
-        Filtered RSRP filenames, SINR filenames, and speeds
+        Filtered RSRP filenames, SINR filenames, and speeds.
     """
-    # Extract speed from filename "ue999kmh_...mat"
-    speeds = [extract_speed(f) for f in rsrp_filenames]
 
-    # Filter the dataset based on the speed
-    idxs = [i for i, speed in enumerate(speeds) if speed in use_speed_list]
-    rsrp_filenames = [rsrp_filenames[i] for i in idxs]
-    sinr_filenames = [sinr_filenames[i] for i in idxs]
-    speeds = [speeds[i] for i in idxs]
-    return rsrp_filenames, sinr_filenames, speeds
+    def _parse_key(fname: str) -> tuple[int, int]:
+        m = re.search(r"_(\d+)kmh_(\d+)\.mat$", fname)
+        if not m:
+            raise ValueError(f"Filename does not match expected pattern: {fname}")
+        speed, uid = map(int, m.groups())
+        return speed, uid
+
+    rsrp_dict = {_parse_key(f): f for f in rsrp_filenames}
+    sinr_dict = {_parse_key(f): f for f in sinr_filenames}
+
+    common_keys = [
+        key for key in rsrp_dict.keys() & sinr_dict.keys() if key[0] in use_speed_list
+    ]
+    common_keys.sort(key=lambda k: (k[0], k[1]))
+
+    rsrp_out = [rsrp_dict[k] for k in common_keys]
+    sinr_out = [sinr_dict[k] for k in common_keys]
+    speeds = [k[0] for k in common_keys]
+
+    return rsrp_out, sinr_out, speeds
 
 
 def get_sync_state(sinr_db: float, q_in_db: float, q_out_db: float):
