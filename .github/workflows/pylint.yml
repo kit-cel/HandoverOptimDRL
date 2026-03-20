@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p public
-          pylint_output=$(pylint src/ho_optim_milp --exit-zero)
+          pylint_output=$(pylint src/ho_optim_drl --exit-zero)
           echo "$pylint_output"
           score=$(echo "$pylint_output" | sed -n 's/.*rated at \([-0-9.]*\)\/10.*/\1/p' | tail -n 1)
           if [ -z "$score" ]; then
