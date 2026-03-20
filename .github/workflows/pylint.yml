@@ -1,24 +1,79 @@
-name: Pylint
+name: Pylint badge
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  lint:
+  build-badge:
     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v4
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-    - name: Run Pylint with badge support
-      uses: Silleellie/pylint-github-action@v2.1
-      with:
-        lint-path: |
-          src
-        python-version: 3.12
-        requirements-path: requirements.txt
-        readme-path: README.md        # This line enables automatic badge updates
-        badge-text: PyLint
-        color-bad-score: red
-        color-ok-score: orange
-        color-good-score: yellow
-        color-perfect-score: brightgreen
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pylint
+      - name: Run pylint and generate badge JSON
+        shell: bash
+        run: |
+          mkdir -p public
+          pylint_output=$(pylint src/ho_optim_milp --exit-zero)
+          echo "$pylint_output"
+          score=$(echo "$pylint_output" | sed -n 's/.*rated at \([-0-9.]*\)\/10.*/\1/p' | tail -n 1)
+          if [ -z "$score" ]; then
+            echo "Could not extract pylint score."
+            exit 1
+          fi
+          export PYLINT_SCORE="$score"
+          python - <<'PY'
+          import json
+          import os
+          score = float(os.environ["PYLINT_SCORE"])
+          if score >= 9.5:
+              color = "brightgreen"
+          elif score >= 9.0:
+              color = "green"
+          elif score >= 8.0:
+              color = "yellowgreen"
+          elif score >= 7.0:
+              color = "yellow"
+          elif score >= 5.0:
+              color = "orange"
+          else:
+              color = "red"
+          payload = {
+              "schemaVersion": 1,
+              "label": "pylint",
+              "message": f"{score:.2f}/10",
+              "color": color
+          }
+          with open("public/pylint-badge.json", "w", encoding="utf-8") as f:
+              json.dump(payload, f)
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
